@@ -101,6 +101,57 @@ $ yarn run clean
 
 - The desktop builds are located in the `dist` directory, and the web builds are found in the `web/.webpack` directory.
 
+## :office: Voxel-Specific Instructions
+
+### :cloud: Updating the ECR Image
+
+Follow these steps to update the Lichtblick Docker image in the Voxel ECR repository:
+
+#### 🛠 1. Make Code or Dockerfile Changes
+- Edit your code, assets, configs, or Dockerfile locally.
+- Save your changes.
+
+#### 🧱 2. Rebuild the Docker Image
+From your project root (where the Dockerfile is):
+
+```sh
+$ docker build -t lichtblick .
+```
+
+You can also add a version tag (recommended):
+
+```sh
+$ docker build -t lichtblick:latest -t lichtblick:v2 .
+```
+
+#### 🏷 3. Tag the New Image for ECR
+
+```sh
+$ docker tag lichtblick:latest 203670452561.dkr.ecr.us-west-2.amazonaws.com/lichtblick:latest
+$ docker tag lichtblick:latest 203670452561.dkr.ecr.us-west-2.amazonaws.com/lichtblick:v2
+```
+
+Replace `v2` with your new version tag if you're versioning.
+
+#### 🔐 4. Log in to ECR (if not already)
+
+```sh
+$ aws ecr get-login-password --region us-west-2 \
+  | docker login --username AWS \
+  --password-stdin 203670452561.dkr.ecr.us-west-2.amazonaws.com
+```
+
+#### 📤 5. Push the Updated Image to ECR
+
+```sh
+$ docker push 203670452561.dkr.ecr.us-west-2.amazonaws.com/lichtblick:latest
+$ docker push 203670452561.dkr.ecr.us-west-2.amazonaws.com/lichtblick:v2
+```
+
+#### 🚀 6. Deploy or Use the New Image
+- In ECS, EKS, or another deployment tool, update your container definition to use the new image tag (latest, v2, etc.).
+- If you're using `:latest`, just redeploy and it will pull the newest one.
+
 ## :pencil: License (Open Source)
 
 Lichtblick follows an open core licensing model. Most functionality is available in this repository, and can be reproduced or modified per the terms of the [Mozilla Public License v2.0](/LICENSE).
