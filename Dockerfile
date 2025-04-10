@@ -1,5 +1,5 @@
 # Build stage
-FROM node:16 AS build
+FROM node:20 AS build
 WORKDIR /src
 COPY . ./
 
@@ -9,7 +9,7 @@ RUN yarn install --immutable
 RUN yarn run web:build:prod
 
 # Release stage
-FROM caddy:2.5.2-alpine
+FROM caddy:2.7.6-alpine
 WORKDIR /src
 COPY --from=build /src/web/.webpack ./
 
